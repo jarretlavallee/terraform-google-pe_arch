@@ -76,3 +76,8 @@ variable "subnetwork_project" {
   type        = string
   default     = null
 }
+variable "labels" {
+  description = "A map of labels that will be applied to the instances"
+  type        = map
+  default     = {}
+}

@@ -14,9 +14,7 @@ resource "google_compute_instance" "server" {
     "internalDNS"  = "pe-server-${var.id}-${count.index}.${element(var.zones, count.index)}.c.${var.project}.internal"
   }
 
-  labels = {
-    "stack" = var.stack_name
-  }
+  labels = var.labels
 
   boot_disk {
     initialize_params {
@@ -67,9 +65,7 @@ resource "google_compute_instance" "psql" {
     "internalDNS"  = "pe-psql-${var.id}-${count.index}.${element(var.zones, count.index)}.c.${var.project}.internal"
   }
 
-  labels = {
-    "stack" = var.stack_name
-  }
+  labels = var.labels
 
   boot_disk {
     initialize_params {
@@ -114,9 +110,7 @@ resource "google_compute_instance" "compiler" {
     "internalDNS"  = "pe-compiler-${var.id}-${count.index}.${element(var.zones, count.index)}.c.${var.project}.internal"
   }
 
-  labels = {
-    "stack" = var.stack_name
-  }
+  labels = var.labels
 
   boot_disk {
     initialize_params {
@@ -160,9 +154,7 @@ resource "google_compute_instance" "node" {
     "internalDNS"  = "pe-node-${var.id}-${count.index}.${element(var.zones, count.index)}.c.${var.project}.internal"
   }
 
-  labels = {
-    "stack" = var.stack_name
-  }
+  labels = var.labels
 
   boot_disk {
     initialize_params {
