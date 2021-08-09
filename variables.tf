@@ -31,6 +31,11 @@ variable "instance_image" {
   type        = string
   default     = "centos-cloud/centos-8"
 }
+variable "instance_types" {
+  description = "A map containing the instances type to be used for each instance category"
+  type        = map
+  default     = {}
+}
 variable "stack_name" {
   description = "A name that'll help the user identify which instances are are part of a specific PE deployment"
   type        = string

@@ -1,7 +1,7 @@
 # PE server instance(s) depending on if a replica is provisioned or not
 resource "google_compute_instance" "server" {
   name         = "pe-server-${var.id}-${count.index}"
-  machine_type = "e2-standard-4"
+  machine_type = lookup(var.instance_types, "server", "e2-standard-4")
   count        = var.server_count
   zone         = element(var.zones, count.index)
 
@@ -53,7 +53,7 @@ resource "google_compute_instance" "server" {
 # Instances to run PE PSQL
 resource "google_compute_instance" "psql" {
   name         = "pe-psql-${var.id}-${count.index}"
-  machine_type = "e2-standard-8"
+  machine_type = lookup(var.instance_types, "psql", "e2-standard-8")
   # count is used to effectively "no-op" this resource in the event that we
   # deploy any architecture other than xlarge
   count = var.database_count
@@ -98,7 +98,7 @@ resource "google_compute_instance" "psql" {
 # Instances to run as compilers
 resource "google_compute_instance" "compiler" {
   name         = "pe-compiler-${var.id}-${count.index}"
-  machine_type = "e2-standard-2"
+  machine_type = lookup(var.instance_types, "compiler", "e2-standard-2")
   # count is used to effectively "no-op" this resource in the event that we
   # deploy the standard architecture
   count = var.compiler_count
@@ -142,7 +142,7 @@ resource "google_compute_instance" "compiler" {
 
 resource "google_compute_instance" "node" {
   name         = "pe-node-${var.id}-${count.index}"
-  machine_type = "n1-standard-1"
+  machine_type = lookup(var.instance_types, "node", "n1-standard-1")
   # count is used to effectively "no-op" this resource in the event that we
   # deploy the standard architecture
   count = var.node_count

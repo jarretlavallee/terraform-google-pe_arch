@@ -107,4 +107,5 @@ module "instances" {
   project            = var.project
   server_count       = data.hiera5.server_count.value
   database_count     = data.hiera5.database_count.value
+  instance_types     = var.instance_types
 }
