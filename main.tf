@@ -59,48 +59,51 @@ resource "random_id" "deployment" {
 # Collect some repeated values used by each major component module into one to
 # make them easier to update
 locals {
-  zones          = try(data.google_compute_zones.available[0].names, ["a", "b", "c"])
-  allowed        = concat(["10.128.0.0/9", "35.191.0.0/16", "130.211.0.0/22"], var.firewall_allow)
-  compiler_count = data.hiera5_bool.has_compilers.value ? var.compiler_count : 0
-  id             = random_id.deployment.hex
-  network        = module.networking.network_link
-  subnetwork     = module.networking.subnetwork_link
-  has_lb         = data.hiera5_bool.has_compilers.value ? true : false
+  zones              = try(data.google_compute_zones.available[0].names, ["a", "b", "c"])
+  allowed            = concat(["10.128.0.0/9", "35.191.0.0/16", "130.211.0.0/22"], var.firewall_allow)
+  compiler_count     = data.hiera5_bool.has_compilers.value ? var.compiler_count : 0
+  id                 = random_id.deployment.hex
+  network            = try(var.network, module.networking.network_link)
+  subnetwork         = try(var.subnetwork, module.networking.subnetwork_link)
+  subnetwork_project = try(var.subnetwork_project, null)
+  has_lb             = data.hiera5_bool.has_compilers.value ? true : false
 }
 
 # Contain all the networking configuration in a module for readability
 module "networking" {
-  source = "./modules/networking"
-  id     = local.id
-  allow  = local.allowed
+  source    = "./modules/networking"
+  id        = local.id
+  allow     = local.allowed
+  to_create = local.subnetwork_project == null ? true : false
 }
 
 # Contain all the loadbalancer configuration in a module for readability
 module "loadbalancer" {
-  source       = "./modules/loadbalancer"
-  id           = local.id
-  ports        = ["8140", "8142"]
-  network      = local.network
-  subnetwork   = local.subnetwork
-  region       = var.region
-  instances    = module.instances.compilers
-  has_lb       = local.has_lb
+  source             = "./modules/loadbalancer"
+  id                 = local.id
+  ports              = ["8140", "8142"]
+  network            = local.network
+  subnetwork         = local.subnetwork
+  region             = var.region
+  instances          = module.instances.compilers
+  has_lb             = local.has_lb
 }
 
 # Contain all the instances configuration in a module for readability
 module "instances" {
-  source         = "./modules/instances"
-  id             = local.id
-  network        = local.network
-  subnetwork     = local.subnetwork
-  zones          = local.zones
-  user           = var.user
-  ssh_key        = var.ssh_key
-  compiler_count = local.compiler_count
-  node_count     = var.node_count
-  instance_image = var.instance_image
-  stack_name     = var.stack_name
-  project        = var.project
-  server_count   = data.hiera5.server_count.value
-  database_count = data.hiera5.database_count.value
+  source             = "./modules/instances"
+  id                 = local.id
+  network            = local.network
+  subnetwork         = local.subnetwork
+  subnetwork_project = local.subnetwork_project
+  zones              = local.zones
+  user               = var.user
+  ssh_key            = var.ssh_key
+  compiler_count     = local.compiler_count
+  node_count         = var.node_count
+  instance_image     = var.instance_image
+  stack_name         = var.stack_name
+  project            = var.project
+  server_count       = data.hiera5.server_count.value
+  database_count     = data.hiera5.database_count.value
 }

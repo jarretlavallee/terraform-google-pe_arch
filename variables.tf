@@ -61,3 +61,18 @@ variable "destroy" {
   type        = bool
   default     = false
 }
+variable "network" {
+  description = "An optional network to use"
+  type        = string
+  default     = null
+}
+variable "subnetwork" {
+  description = "An optional subnetwork to use"
+  type        = string
+  default     = null
+}
+variable "subnetwork_project" {
+  description = "An optional subnetwork_project to use"
+  type        = string
+  default     = null
+}
