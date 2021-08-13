@@ -66,6 +66,7 @@ locals {
   network            = try(var.network, module.networking.network_link)
   subnetwork         = try(var.subnetwork, module.networking.subnetwork_link)
   subnetwork_project = try(var.subnetwork_project, null)
+  create_network     = var.subnetwork_project == null ? true : false       
   has_lb             = data.hiera5_bool.has_compilers.value ? true : false
   labels             = merge(var.labels, { "stack" = var.stack_name })
 }
@@ -75,7 +76,7 @@ module "networking" {
   source    = "./modules/networking"
   id        = local.id
   allow     = local.allowed
-  to_create = local.subnetwork_project == null ? true : false
+  to_create = local.create_network
 }
 
 # Contain all the loadbalancer configuration in a module for readability
@@ -87,7 +88,7 @@ module "loadbalancer" {
   subnetwork         = local.subnetwork
   region             = var.region
   instances          = module.instances.compilers
-  has_lb             = local.has_lb
+  has_lb             = local.has_lb && local.create_network
 }
 
 # Contain all the instances configuration in a module for readability
