@@ -66,9 +66,10 @@ locals {
   network            = try(var.network, module.networking.network_link)
   subnetwork         = try(var.subnetwork, module.networking.subnetwork_link)
   subnetwork_project = try(var.subnetwork_project, null)
-  create_network     = var.subnetwork_project == null ? true : false       
+  create_network     = var.subnetwork_project == null ? true : false
   has_lb             = data.hiera5_bool.has_compilers.value ? true : false
   labels             = merge(var.labels, { "stack" = var.stack_name })
+  ssh_key            = fileexists(var.ssh_key) ? var.ssh_key : "/dev/null"
 }
 
 # Contain all the networking configuration in a module for readability
@@ -100,7 +101,7 @@ module "instances" {
   subnetwork_project = local.subnetwork_project
   zones              = local.zones
   user               = var.user
-  ssh_key            = var.ssh_key
+  ssh_key            = local.ssh_key
   compiler_count     = local.compiler_count
   node_count         = var.node_count
   instance_image     = var.instance_image
