@@ -9,3 +9,7 @@ output "pool" {
   description = "The GCP internal network FQDN of the Puppet Enterprise compiler pool"
   sensitive   = true
 }
+output "ip_path" {
+  value       = var.subnetwork_project == null ? "network_interface.0.access_config.0.nat_ip" : "network_interface.0.network_ip"
+  description = "The path to the IP Address for the instance"
+}
